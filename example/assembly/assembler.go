@@ -8,7 +8,7 @@ import (
 )
 
 type Assembler interface {
-	getInterface(interfaceTypeName string) (interface{}, error)
+	GetInterface(interfaceTypeName string) (interface{}, error)
 }
 
 // Hidden implementation of Assembler
@@ -24,7 +24,7 @@ func (a *assembler) setType(interfaceTypeName string, ctx factory.FactoryContext
 }
 
 // Returns an instance of the wired object
-func (a *assembler) getInterface(interfaceTypeName string) (interface{}, error) {
+func (a *assembler) GetInterface(interfaceTypeName string) (interface{}, error) {
 	if fn, ok := a.m[interfaceTypeName]; !ok {
 		return nil, errors.New(fmt.Sprintf("%v is not available", interfaceTypeName))
 	} else {

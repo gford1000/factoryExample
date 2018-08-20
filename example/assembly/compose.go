@@ -4,7 +4,6 @@ import (
 	"reflect"
 
 	"github.com/gford1000/factory"
-	"github.com/gford1000/factory/example/interfaces"
 )
 
 // All Instance types must have a composer function emitting these items:
@@ -13,13 +12,17 @@ import (
 // - A function that returns a populated Shim to an instance of the Interface
 type Composer func(policy factory.Policy) (reflect.Type, factory.FactoryContext, factory.ShimBuilder)
 
+// This is the function that wires together instances of Interfaces to create a Processor
+// that can deal with runtime requests.
+type WireProcessor func(a Assembler) Processor
+
 // Wire together the business logic, which is
 // exposed as a Processor instance
-func New(policy factory.Policy) Processor {
+func New(policy factory.Policy, fn WireProcessor) ProcessorWrapper {
 
 	a := populateAssembler(policy)
 
-	return wireProcessor(a)
+	return wireProcessorWrapper(a, fn)
 }
 
 // Creates factories and shims for each domain logic interface
@@ -47,25 +50,14 @@ func populateAssembler(policy factory.Policy) *assembler {
 }
 
 // Wires domain logic instances so that requests can be processed
-func wireProcessor(a *assembler) Processor {
-	oA, err := a.getInterface("interfaces.A")
-	if err != nil {
-		panic("Unable to create object of type interfaces.A")
-	}
-
-	oB, err := a.getInterface("interfaces.B")
-	if err != nil {
-		panic("Unable to create object of type interfaces.B")
-	}
-
+func wireProcessorWrapper(a *assembler, fn WireProcessor) ProcessorWrapper {
 	ctx := []factory.FactoryContext{}
 	for k := range a.ctx {
 		ctx = append(ctx, k)
 	}
 
-	return &processor{
+	return &processorWrapper{
 		ctx: ctx,
-		a:   oA.(interfaces.A),
-		b:   oB.(interfaces.B),
+		p:   fn(a),
 	}
 }
