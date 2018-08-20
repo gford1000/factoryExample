@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/gford1000/factory"
 	"github.com/gford1000/factory/example/assembly"
 	"github.com/gford1000/factory/example/interfaces"
@@ -40,11 +39,7 @@ func (h *handler) applyContext(ctx factory.ExecutionContext) {
 	}
 }
 
-func (h *handler) handleRequest() {
-	fmt.Println(h.myB.World(h.myA))
-}
-
-func (h *handler) HandleRequest(ctx factory.ExecutionContext) {
+func (h *handler) handleRequest(ctx factory.ExecutionContext) string {
 	h.applyContext(ctx)
-	h.handleRequest()
+	return h.myB.World(h.myA)
 }
