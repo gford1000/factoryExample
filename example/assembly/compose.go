@@ -4,6 +4,7 @@ import (
 	"reflect"
 
 	"github.com/gford1000/factory"
+	"github.com/gford1000/factory/example/interfaces"
 )
 
 // All Instance types must have a composer function emitting these items:
@@ -12,10 +13,11 @@ import (
 // - A function that returns a populated Shim to an instance of the Interface
 type Composer func(policy factory.Policy) (reflect.Type, factory.FactoryContext, factory.ShimBuilder)
 
-// Declare the Instances to be used by the application
-func New(policy factory.Policy) Assembler {
+// Wire together the business logic, which is
+// exposed as a Processor instance
+func New(policy factory.Policy) Processor {
 
-	a := assembler{
+	a := &assembler{
 		ctx: map[factory.FactoryContext]bool{},
 		m:   map[string]func() interface{}{},
 	}
@@ -33,5 +35,19 @@ func New(policy factory.Policy) Assembler {
 		})
 	}
 
-	return &a
+	oA, err := a.getInterface("interfaces.A")
+	if err != nil {
+		panic("Unable to create object of type interfaces.A")
+	}
+
+	oB, err := a.getInterface("interfaces.B")
+	if err != nil {
+		panic("Unable to create object of type interfaces.B")
+	}
+
+	return &processor{
+		assembler: a,
+		a:         oA.(interfaces.A),
+		b:         oB.(interfaces.B),
+	}
 }

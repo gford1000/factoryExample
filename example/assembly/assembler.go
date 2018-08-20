@@ -8,8 +8,7 @@ import (
 )
 
 type Assembler interface {
-	GetFactoryContexts() []factory.FactoryContext
-	GetInterface(interfaceTypeName string) (interface{}, error)
+	getInterface(interfaceTypeName string) (interface{}, error)
 }
 
 // Hidden implementation of Assembler
@@ -24,17 +23,8 @@ func (a *assembler) setType(interfaceTypeName string, ctx factory.FactoryContext
 	a.ctx[ctx] = true
 }
 
-// Returns the FactoryContext instances that are registered
-func (a *assembler) GetFactoryContexts() []factory.FactoryContext {
-	keys := make([]factory.FactoryContext, 0, len(a.ctx))
-	for k := range a.ctx {
-		keys = append(keys, k)
-	}
-	return keys
-}
-
 // Returns an instance of the wired object
-func (a *assembler) GetInterface(interfaceTypeName string) (interface{}, error) {
+func (a *assembler) getInterface(interfaceTypeName string) (interface{}, error) {
 	if fn, ok := a.m[interfaceTypeName]; !ok {
 		return nil, errors.New(fmt.Sprintf("%v is not available", interfaceTypeName))
 	} else {
