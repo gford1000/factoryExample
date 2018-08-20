@@ -8,31 +8,40 @@ import (
 )
 
 type handler struct {
-	a assembly.Assembler
-	o interfaces.A
+	assembler assembly.Assembler
+	myA       interfaces.A
+	myB       interfaces.B
 }
 
 func (h *handler) initialise() {
 	policy := &myPolicy{}
-	h.a = assembly.New(policy)
+	h.assembler = assembly.New(policy)
 
-	o, err := h.a.GetInterface("interfaces.A")
+	o, err := h.assembler.GetInterface("interfaces.A")
 
 	if err != nil {
 		panic(err)
 	}
 
-	h.o = o.(interfaces.A)
+	h.myA = o.(interfaces.A)
+
+	o, err = h.assembler.GetInterface("interfaces.B")
+
+	if err != nil {
+		panic(err)
+	}
+
+	h.myB = o.(interfaces.B)
 }
 
 func (h *handler) applyContext(ctx factory.ExecutionContext) {
-	for _, c := range h.a.GetFactoryContexts() {
+	for _, c := range h.assembler.GetFactoryContexts() {
 		c.SetExecutionContext(ctx)
 	}
 }
 
 func (h *handler) handleRequest() {
-	fmt.Println(h.o.Hello())
+	fmt.Println(h.myB.World(h.myA))
 }
 
 func (h *handler) HandleRequest(ctx factory.ExecutionContext) {

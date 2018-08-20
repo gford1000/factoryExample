@@ -23,16 +23,33 @@ func (p *myPolicy) GetExemplarHash(ctx factory.ExecutionContext, interfaceType r
 	// we can set policies for which concrete class should
 	// be returned for a given execution context
 
-	if interfaceType == reflect.TypeOf((*interfaces.A)(nil)).Elem() {
+	if ctx.Hash() == "Context1" {
 
-		if ctx.Hash() == "Context1" {
+		if interfaceType == reflect.TypeOf((*interfaces.A)(nil)).Elem() {
+
 			tA1 := reflect.TypeOf(domain_logic.A1{})
 			return fmt.Sprintf("%x", sha256.Sum256([]byte(tA1.String())))
 		}
 
-		if ctx.Hash() == "Context2" {
+		if interfaceType == reflect.TypeOf((*interfaces.B)(nil)).Elem() {
+
+			tB1 := reflect.TypeOf(domain_logic.B1{})
+			return fmt.Sprintf("%x", sha256.Sum256([]byte(tB1.String())))
+		}
+	}
+
+	if ctx.Hash() == "Context2" {
+
+		if interfaceType == reflect.TypeOf((*interfaces.A)(nil)).Elem() {
+
 			tA2 := reflect.TypeOf(domain_logic.A2{})
 			return fmt.Sprintf("%x", sha256.Sum256([]byte(tA2.String())))
+		}
+
+		if interfaceType == reflect.TypeOf((*interfaces.B)(nil)).Elem() {
+
+			tB2 := reflect.TypeOf(domain_logic.B2{})
+			return fmt.Sprintf("%x", sha256.Sum256([]byte(tB2.String())))
 		}
 	}
 

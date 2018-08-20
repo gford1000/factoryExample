@@ -11,5 +11,5 @@ type A2 struct {
 }
 
 func (a *A2) Hello() string {
-	return "World"
+	return "Hello again"
 }
