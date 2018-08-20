@@ -17,5 +17,19 @@ of the domain logic that should be used in this context.
 
 As a result, the domain logic need not be aware of its context, making its source code clearer and simpler to test.
 
+## Running the example
+
+Move to the `example/server` subfolder and make the application `go build`.  Starting the application `./server` will
+create a webserver at port 8080, to which `curl` calls can be made.
+
+All requests require the header `X-Context`.  Examples of valid contexts are:
+
+`curl -H "X-Context: Context1" localhost:8080`
+`curl -H "X-Context: Context2" localhost:8080`
+
+
+
+
+
 
 
