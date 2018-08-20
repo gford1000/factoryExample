@@ -17,6 +17,14 @@ type Composer func(policy factory.Policy) (reflect.Type, factory.FactoryContext,
 // exposed as a Processor instance
 func New(policy factory.Policy) Processor {
 
+	a := populateAssembler(policy)
+
+	return wireProcessor(a)
+}
+
+// Creates factories and shims for each domain logic interface
+func populateAssembler(policy factory.Policy) *assembler {
+
 	a := &assembler{
 		ctx: map[factory.FactoryContext]bool{},
 		m:   map[string]func() interface{}{},
@@ -35,6 +43,11 @@ func New(policy factory.Policy) Processor {
 		})
 	}
 
+	return a
+}
+
+// Wires domain logic instances so that requests can be processed
+func wireProcessor(a *assembler) Processor {
 	oA, err := a.getInterface("interfaces.A")
 	if err != nil {
 		panic("Unable to create object of type interfaces.A")
@@ -45,9 +58,14 @@ func New(policy factory.Policy) Processor {
 		panic("Unable to create object of type interfaces.B")
 	}
 
+	ctx := []factory.FactoryContext{}
+	for k := range a.ctx {
+		ctx = append(ctx, k)
+	}
+
 	return &processor{
-		assembler: a,
-		a:         oA.(interfaces.A),
-		b:         oB.(interfaces.B),
+		ctx: ctx,
+		a:   oA.(interfaces.A),
+		b:   oB.(interfaces.B),
 	}
 }

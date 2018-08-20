@@ -13,14 +13,22 @@ type Processor interface {
 
 // A basic implementation of Processor
 type processor struct {
-	assembler *assembler
-	a         interfaces.A
-	b         interfaces.B
+	ctx []factory.FactoryContext
+	a   interfaces.A
+	b   interfaces.B
+}
+
+func (p *processor) setContext(ctx factory.ExecutionContext) {
+	for _, c := range p.ctx {
+		c.SetExecutionContext(ctx)
+	}
+}
+
+func (p *processor) processRequest() string {
+	return p.b.World(p.a)
 }
 
 func (p *processor) Process(ctx factory.ExecutionContext) string {
-	for c := range p.assembler.ctx {
-		c.SetExecutionContext(ctx)
-	}
-	return p.b.World(p.a)
+	p.setContext(ctx)
+	return p.processRequest()
 }
