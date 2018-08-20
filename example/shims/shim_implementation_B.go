@@ -1,4 +1,4 @@
-package factories
+package shims
 
 import (
 	"github.com/gford1000/factory"
